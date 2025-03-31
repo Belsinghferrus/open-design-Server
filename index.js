@@ -10,7 +10,13 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+    cors({
+      origin: "http://localhost:3000", // Allow only your frontend
+      credentials: true, // Allow credentials (cookies, headers)
+    })
+  );
+// app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -31,5 +37,5 @@ app.get("/", async (req, res) => {
 })
 
 // Start Server
-const PORT = 3000;
+const PORT = 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
