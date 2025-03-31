@@ -2,17 +2,20 @@ import DB from "../config/db.js";
 
 // Add a New Project
 export const addProject = async (req, res) => {
-    try {
         const { name, content, category, location, amenities, features, map_embed, image } = req.body;
-        const result = await DB.query(
-            "INSERT INTO projects (name, content, category, location, amenities, features, map_embed, image) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
-            [name, content, category, location, amenities, features, map_embed, image]
-        );
-        res.status(201).json({ message: "Project added", project: result.rows[0] });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error adding project", error });
-    }
+        const user_id = req.user.id;
+
+        try {
+            const newProject = await DB.query(
+                `INSERT INTO projects (name, content, category, location, image, amenities, features, map_embed, user_id)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+                [name, content, category, location, image, amenities, features, map_embed, user_id]
+            );
+            res.status(201).json({ message: "Project created successfully", project: newProject.rows[0] });
+        } catch (error) {
+            res.status(500).json({ message: "Error adding project", error: error.message });
+        }
+    
 };
 
 // Get All Projects

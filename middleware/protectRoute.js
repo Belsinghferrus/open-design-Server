@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const authMiddleware = (req, res, next) => {
     const authHeader = req.header("Authorization");
-    console.log("🔍 Auth Header:", authHeader); // Log the entire header
+    console.log("🔍 Auth Header:", authHeader);
 
     if (!authHeader) {
         console.log("❌ No Authorization header found");
@@ -10,7 +10,7 @@ const authMiddleware = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-    console.log("🔍 Token received:", token); // Log token
+    console.log("🔍 Token received:", token);
 
     if (!token) {
         console.log("❌ No token found in Authorization header");
@@ -19,11 +19,11 @@ const authMiddleware = (req, res, next) => {
 
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("✅ Token verified:", verified); // Log decoded token
+        console.log("✅ Token verified:", verified); 
         req.user = verified;
         next();
     } catch (err) {
-        console.error("❌ Token verification failed:", err.message); // Log error
+        console.error("❌ Token verification failed:", err.message);
         res.status(400).json({ message: "Invalid Token" });
     }
 };
