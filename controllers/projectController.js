@@ -21,13 +21,37 @@ export const addProject = async (req, res) => {
 // Get All Projects
 export const getProjects = async (req, res) => {
     try {
-        const result = await DB.query("SELECT * FROM projects");
+        const { name, category, location, amenities } = req.query;
+
+        let query = "SELECT * FROM projects WHERE 1=1"; 
+        let values = [];
+
+        if (name) {
+            query += ` AND LOWER(name) LIKE $${values.length + 1}`;
+            values.push(`%${name.toLowerCase()}%`);
+        }
+        if (category) {
+            query += ` AND LOWER(category) LIKE $${values.length + 1}`;
+            values.push(`%${category.toLowerCase()}%`);
+        }
+        if (location) {
+            query += ` AND LOWER(location) LIKE $${values.length + 1}`;
+            values.push(`%${location.toLowerCase()}%`);
+        }
+        if (amenities) {
+            const amenitiesArray = amenities.split(",").map((a) => a.trim().toLowerCase());
+            query += ` AND amenities && $${values.length + 1}`; 
+            values.push(amenitiesArray);
+        }
+
+        const result = await DB.query(query, values);
         res.status(200).json(result.rows);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching projects:", error);
         res.status(500).json({ message: "Error fetching projects", error });
     }
 };
+
 
 // Get Single Project
 export const getProjectById = async (req, res) => {
